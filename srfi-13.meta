@@ -1,0 +1,7 @@
+;; -*- scheme -*-
+((synopsis "SRFI-13 string library")
+ (author "Olin Shivers")
+ (maintainer "The CHICKEN Team")
+ (category data)
+ (license "BSD")
+ (test-depends test))
