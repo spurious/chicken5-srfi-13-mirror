@@ -5,4 +5,6 @@
 
 (install-extension
  'srfi-13
- '("srfi-13.so" "srfi-13.import.so" "srfi-13.types"))
+ '("srfi-13.so" "srfi-13.import.so" "srfi-13.types")
+ '((version "1.0")))
+
