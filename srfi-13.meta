@@ -4,4 +4,5 @@
  (maintainer "The CHICKEN Team")
  (category data)
  (license "BSD")
+ (depends srfi-14)
  (test-depends test))
