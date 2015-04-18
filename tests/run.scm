@@ -1,4 +1,4 @@
-(use srfi-13 test)
+(use srfi-13 srfi-14 test)
 
 (define (fill text)
   (let* ((len (string-length text))
@@ -640,13 +640,11 @@
           (match? (caddr test-case))
 	  (steps (cdddr test-case))
 	  (rv (make-kmp-restart-vector pat)))
-     (call-with-input-string
-      str
-      (lambda (p)
-	(let lp ((i 0)
-		 (step 0)
-		 (steps steps))
-	  (cond
+     (let ((p (open-input-string str)))
+       (let lp ((i 0)
+		(step 0)
+		(steps steps))
+	 (cond
 	   ((or (= i n) (eof-object? (peek-char p)))
 	    (test-assert (sprintf "KMP match? ~S, case: ~S" match? test-case)
 			 (eq? (= i n) match?))
@@ -659,7 +657,7 @@
 	      (test (sprintf "KMP step ~S (exp: ~S, act: ~S), case: ~S"
 		      step expected-i i test-case)
 		    expected-i i)
-	      (lp new-i (add1 step) (cdr steps))))))))))
+	      (lp new-i (add1 step) (cdr steps)))))))))
  kmp-cases)
 
 ; FIXME!  Implement tests for these:
