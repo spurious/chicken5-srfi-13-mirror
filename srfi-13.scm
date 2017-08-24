@@ -94,7 +94,8 @@
  xsubstring)
 
 (import chicken
-        (except scheme string-copy string-fill! string->list))
+        (except scheme string-copy string-fill! string->list)
+        (only (chicken string) reverse-list->string))
 (use srfi-14)
 
 (register-feature! 'srfi-13)
