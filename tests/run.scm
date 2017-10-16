@@ -1,4 +1,4 @@
-(use chicken.format srfi-13 srfi-14 test)
+(import (chicken format) srfi-13 srfi-14 test)
 
 (define (fill text)
   (let* ((len (string-length text))
