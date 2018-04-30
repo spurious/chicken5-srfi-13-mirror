@@ -6,4 +6,4 @@
  (license "BSD")
  (dependencies srfi-14)
  (test-dependencies test)
- (components (extension srfi-13 (types-file))))
+ (components (extension srfi-13 (types-file (predefined)))))
