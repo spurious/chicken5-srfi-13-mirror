@@ -10,7 +10,6 @@
  let-string-start+end
  kmp-step
  make-kmp-restart-vector
- reverse-list->string
  string->list
  string-any
  string-append/shared
@@ -93,10 +92,12 @@
  substring/shared
  xsubstring)
 
-(import chicken
-        (except scheme string-copy string-fill! string->list)
+(import (chicken base)
+        (chicken fixnum)
+        (chicken platform)
+        (except (scheme) string-copy string-fill! string->list)
         (only (chicken string) reverse-list->string)
-        srfi-14)
+        (srfi 14))
 
 (register-feature! 'srfi-13)
 
