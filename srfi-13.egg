@@ -1,6 +1,6 @@
-;; -*- scheme -*-
-((version "1.5")
- (synopsis "SRFI-13 string library")
+;;; srfi-13.egg -*- Scheme -*- vim: ft=scheme:
+
+((synopsis "SRFI-13 string library")
  (author "Olin Shivers")
  (maintainer "The CHICKEN Team")
  (category data)
