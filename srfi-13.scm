@@ -1015,8 +1015,8 @@
                                                         ;     (exact? bound)
                                                         ;     (<= 0 bound)))
                                          rest)
-    (if (zero? bound) (set! bound 4194304))
     (##sys#check-fixnum bound 'string-hash)
+    (if (zero? bound) (set! bound 4194304))
     (let-string-start+end (start end) string-hash s rest
       (%string-hash s char->integer bound start end))))
 
@@ -1025,8 +1025,8 @@
                                                          ;    (exact? bound)
                                                          ;    (<= 0 bound)))
                                          rest)
-    (if (zero? bound) (set! bound 4194304))
     (##sys#check-fixnum bound 'string-hash-ci)
+    (if (zero? bound) (set! bound 4194304))
     (let-string-start+end (start end) string-hash-ci s rest
       (%string-hash s (lambda (c) (char->integer (char-downcase c)))
                     bound start end))))
