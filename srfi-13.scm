@@ -329,7 +329,6 @@
 ;    (check-arg (lambda (start) (and (integer? start) (exact? start) (<= 0 start)))
 ;              start substring/shared)
     (let ([n (optional maybe-end slen)])
-      (##sys#check-exact n 'substring/shared)
       (check-substring-spec 'substring/shared s start n)
       (%substring/shared s start n) ) ) )
 #|
@@ -648,7 +647,7 @@
 ;  (check-arg procedure? proc string-tabulate)
 ;  (check-arg (lambda (val) (and (integer? val) (exact? val) (<= 0 val)))
 ;            len string-tabulate)
-  (##sys#check-exact len 'string-tabulate)
+  (##sys#check-fixnum len 'string-tabulate)
   (let ((s (make-string len)))
     (do ((i (- len 1) (- i 1)))
         ((< i 0))
@@ -1017,7 +1016,7 @@
                                                         ;     (<= 0 bound)))
                                          rest)
     (if (zero? bound) (set! bound 4194304))
-    (##sys#check-exact bound 'string-hash)
+    (##sys#check-fixnum bound 'string-hash)
     (let-string-start+end (start end) string-hash s rest
       (%string-hash s char->integer bound start end))))
 
@@ -1027,7 +1026,7 @@
                                                          ;    (<= 0 bound)))
                                          rest)
     (if (zero? bound) (set! bound 4194304))
-    (##sys#check-exact bound 'string-hash-ci)
+    (##sys#check-fixnum bound 'string-hash-ci)
     (let-string-start+end (start end) string-hash-ci s rest
       (%string-hash s (lambda (c) (char->integer (char-downcase c)))
                     bound start end))))
@@ -1162,7 +1161,7 @@
 
 
 (define (string-pad-right s n . char+start+end)
-  (##sys#check-exact n 'string-pad-right)
+  (##sys#check-fixnum n 'string-pad-right)
   (let-optionals* char+start+end ((char #\space) rest) ; (char? char)) rest)
     (let-string-start+end (start end) string-pad-right s rest
       (let ((len (- end start)))
@@ -1173,7 +1172,7 @@
               ans))))))
 
 (define (string-pad s n . char+start+end)
-  (##sys#check-exact n 'string-pad)
+  (##sys#check-fixnum n 'string-pad)
   (let-optionals* char+start+end ((char #\space) rest) ; (char? char)) rest)
     (let-string-start+end (start end) string-pad s rest
       (let ((len (- end start)))
@@ -1396,7 +1395,6 @@
 (define (string-copy! to tstart from . maybe-fstart+fend)
   (let-string-start+end (fstart fend) string-copy! from maybe-fstart+fend
 ;    (check-arg integer? tstart string-copy!)
-    (##sys#check-exact tstart 'string-copy!)
     (check-substring-spec string-copy! to tstart (+ tstart (- fend fstart)))
     (%string-copy! to tstart from fstart fend)))
 
@@ -1708,7 +1706,7 @@
 ;                                       (and (integer? end)
 ;                                            (exact? end)
 ;                                            (<= 0 end (string-length final)))))
-    (##sys#check-exact end 'string-concatenate-reverse)
+    (##sys#check-fixnum end 'string-concatenate-reverse)
     (let ((len (let lp ((sum 0) (lis string-list))
                  (if (pair? lis)
                      (lp (+ sum (string-length (car lis))) (cdr lis))
@@ -1722,7 +1720,7 @@
 ;                                       (and (integer? end)
 ;                                            (exact? end)
 ;                                            (<= 0 end (string-length final)))))
-    (##sys#check-exact end 'string-concatenate-reverse/shared)
+    (##sys#check-fixnum end 'string-concatenate-reverse/shared)
     ;; Add up the lengths of all the strings in STRING-LIST; also get a
     ;; pointer NZLIST into STRING-LIST showing where the first non-zero-length
     ;; string starts.
@@ -1828,7 +1826,7 @@
 (define (xsubstring s from . maybe-to+start+end)
 ;  (check-arg (lambda (val) (and (integer? val) (exact? val)))
 ;            from xsubstring)
-  (##sys#check-exact from 'xsubstring)
+  (##sys#check-fixnum from 'xsubstring)
   (receive (to start end)
            (if (pair? maybe-to+start+end)
                (let-string-start+end (start end) xsubstring s (cdr maybe-to+start+end)
@@ -1837,7 +1835,7 @@
 ;                                                (exact? val)
 ;                                                (<= from val)))
 ;                             to xsubstring)
-                   (##sys#check-exact to 'xsubstring)
+                   (##sys#check-fixnum to 'xsubstring)
                    (values to start end)))
 ;              (let ((slen (string-length (check-arg string? s xsubstring))))
                (let ((slen (string-length s)))
@@ -1880,14 +1878,14 @@
 (define (string-xcopy! target tstart s sfrom . maybe-sto+start+end)
 ;  (check-arg (lambda (val) (and (integer? val) (exact? val)))
 ;            sfrom string-xcopy!)
-  (##sys#check-exact sfrom 'string-xcopy!)
+  (##sys#check-fixnum sfrom 'string-xcopy!)
   (receive (sto start end)
            (if (pair? maybe-sto+start+end)
                (let-string-start+end (start end) string-xcopy! s (cdr maybe-sto+start+end)
                  (let ((sto (car maybe-sto+start+end)))
 ;                  (check-arg (lambda (val) (and (integer? val) (exact? val)))
 ;                             sto string-xcopy!)
-                   (##sys#check-exact sto 'string-xcopy!)
+                   (##sys#check-fixnum sto 'string-xcopy!)
                    (values sto start end)))
                (let ((slen (string-length s)))
                  (values (+ sfrom slen) 0 slen)))
