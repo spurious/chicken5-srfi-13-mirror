@@ -222,35 +222,39 @@
 ;;; Support for START/END substring specs
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define-syntax check-string-lengths
+  (syntax-rules ()
+    ((check-string-lengths s start end)
+     (let* ((slen (string-length s)))
+       (cond ((not (and (fixnum? start) (>= start 0)))
+              (##sys#error 'proc "Illegal substring START spec" start s)))
+       (cond ((not (and (fixnum? end) (<= end slen)))
+              (##sys#error 'proc "Illegal substring END spec" end s)))
+       (unless (<= start end)
+         (##sys#error 'proc "Illegal substring START/END spec" start end s))))))
+
 (define-syntax let-string-start+end2
   (syntax-rules ()
-    ((_ (s-e1 s-e2 s-e3 s-e4) proc s1 s2 args . body)
-     (let ((procv proc))
-       (let-string-start+end
-        (s-e1 s-e2 rest) procv s1 args
-        (let-string-start+end
-         (s-e3 s-e4) procv s2 rest
-         . body) ) ) ) ) )
+    ((let-string-start+end2 (start1 end1 start2 end2) proc s1-exp s2-exp args-exp body ...)
+     (let ((s1 s1-exp) (s2 s2-exp))
+       (let-optionals* args-exp ((start1 0) (end1 (string-length s1))
+                                 (start2 0) (end2 (string-length s2)))
+         (check-string-lengths s1-exp start1 end1)
+         (check-string-lengths s2-exp start2 end2)
+         body ...))) ) )
 
 (define-syntax let-string-start+end
-  (er-macro-transformer
-   (lambda (form r c)
-     (##sys#check-syntax 'let-string-start+end form '(_ _ _ _ _ . _))
-     (let ((s-e-r (cadr form))
-           (proc (caddr form))
-           (s-exp (cadddr form))
-           (args-exp (car (cddddr form)))
-           (body (cdr (cddddr form)))
-           (%receive (r 'receive))
-           (%string-parse-start+end (r 'string-parse-start+end))
-           (%string-parse-final-start+end (r 'string-parse-final-start+end)))
-       (if (pair? (cddr s-e-r))
-           `(,%receive (,(caddr s-e-r) ,(car s-e-r) ,(cadr s-e-r))
-                       (,%string-parse-start+end ,proc ,s-exp ,args-exp)
-                       ,@body)
-           `(,%receive ,s-e-r
-                       (,%string-parse-final-start+end ,proc ,s-exp ,args-exp)
-                       ,@body) ) ))))
+  (syntax-rules ()
+    ((let-string-start+end (start end) proc s-exp args-exp body ...)
+     (let ((s s-exp)) ; Note: if this is a complex expression, it's less efficient
+       (let-optionals* args-exp ((start 0) (end (string-length s)))
+         (check-string-lengths s start end)
+         body ...)))
+    ((let-string-start+end (start end rest) proc s-exp args-exp body ...)
+     (let ((s s-exp))
+       (let-optionals* args-exp ((start 0) (end (string-length s)) rest)
+         (check-string-lengths s start end)
+         body ...)))))
 
 
 ;;; Returns three values: rest start end
@@ -1015,9 +1019,9 @@
                                                         ;     (exact? bound)
                                                         ;     (<= 0 bound)))
                                          rest)
-    (##sys#check-fixnum bound 'string-hash)
-    (if (zero? bound) (set! bound 4194304))
     (let-string-start+end (start end) string-hash s rest
+      (##sys#check-fixnum bound 'string-hash)
+      (if (zero? bound) (set! bound 4194304))
       (%string-hash s char->integer bound start end))))
 
 (define (string-hash-ci s . maybe-bound+start+end)
@@ -1025,9 +1029,9 @@
                                                          ;    (exact? bound)
                                                          ;    (<= 0 bound)))
                                          rest)
-    (##sys#check-fixnum bound 'string-hash-ci)
-    (if (zero? bound) (set! bound 4194304))
     (let-string-start+end (start end) string-hash-ci s rest
+      (##sys#check-fixnum bound 'string-hash-ci)
+      (if (zero? bound) (set! bound 4194304))
       (%string-hash s (lambda (c) (char->integer (char-downcase c)))
                     bound start end))))
 
@@ -1161,9 +1165,9 @@
 
 
 (define (string-pad-right s n . char+start+end)
-  (##sys#check-fixnum n 'string-pad-right)
   (let-optionals* char+start+end ((char #\space) rest) ; (char? char)) rest)
     (let-string-start+end (start end) string-pad-right s rest
+      (##sys#check-fixnum n 'string-pad-right)
       (let ((len (- end start)))
         (if (<= n len)
             (%substring/shared s start (+ start n))
@@ -1172,9 +1176,9 @@
               ans))))))
 
 (define (string-pad s n . char+start+end)
-  (##sys#check-fixnum n 'string-pad)
   (let-optionals* char+start+end ((char #\space) rest) ; (char? char)) rest)
     (let-string-start+end (start end) string-pad s rest
+      (##sys#check-fixnum n 'string-pad)
       (let ((len (- end start)))
         (if (<= n len)
             (%substring/shared s (- end n) end)
