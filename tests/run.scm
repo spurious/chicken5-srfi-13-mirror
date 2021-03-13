@@ -422,6 +422,8 @@
        (xsubstring "abcdefg" 0 7 3 6))
 (test "xsubstring" ""
        (xsubstring "abcdefg" 9 9 3 6))
+(test "xsubstring" "fo"
+       (xsubstring "foo" 0 2))
 
 (test "string-xcopy!" "ZZcdefabZZ"
        (let ((s (make-string 10 #\Z)))
