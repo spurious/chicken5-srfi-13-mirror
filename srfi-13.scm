@@ -96,6 +96,7 @@
 (import (chicken base)
         (chicken fixnum)
         (chicken platform)
+        (chicken flonum)
         (except (scheme) string-copy string-fill! string->list)
         (only (chicken string) reverse-list->string)
         (srfi 14))
@@ -1854,16 +1855,11 @@
             ((= 1 slen)         ; Fast path for 1-char replication.
              (make-string anslen (string-ref s start)))
 
-            ;; CHICKEN compiles this file with (declare (fixnum)), so
-            ;; flonum operations are not reliable.  Since this clause
-            ;; just provides a shorter path to avoid calling
-            ;; %multispan-repcopy!, we comment it out and leave the
-            ;; fixnum declaration.
-            ;;
             ;; Selected text falls entirely within one span.
-            ;; ((= (floor (/ from slen)) (floor (/ to slen)))
-            ;;  (##sys#substring s (+ start (modulo from slen))
-            ;;            (+ start (modulo to   slen))))
+            ((= (fpfloor (fp/ (exact->inexact from) (exact->inexact slen)) )
+                (fpfloor (fp/ (exact->inexact to) (exact->inexact slen))))
+             (##sys#substring s (+ start (modulo from slen))
+                              (+ start (modulo to   slen))))
 
             ;; Selected text requires multiple spans.
             (else (let ((ans (make-string anslen)))
@@ -1907,17 +1903,12 @@
             ((= 1 slen)                 ; Fast path for 1-char replication.
              (##srfi13#string-fill! target (string-ref s start) tstart tend))
 
-            ;; CHICKEN compiles this file with (declare (fixnum)), so
-            ;; flonum operations are not reliable.  Since this clause
-            ;; just provides a shorter path to avoid calling
-            ;; %multispan-repcopy!, we comment it out and leave the
-            ;; fixnum declaration.
-            ;;
             ;; Selected text falls entirely within one span.
-            ;; ((= (floor (/ sfrom slen)) (floor (/ sto slen)))
-            ;;  (%string-copy! target tstart s
-            ;;              (+ start (modulo sfrom slen))
-            ;;              (+ start (modulo sto   slen))))
+            ((= (fpfloor (fp/ (exact->inexact sfrom) (exact->inexact slen)) )
+                (fpfloor (fp/ (exact->inexact sto) (exact->inexact slen))))
+             (%string-copy! target tstart s
+                            (+ start (modulo sfrom slen))
+                            (+ start (modulo sto   slen))))
 
             ;; Multi-span copy.
             (else (%multispan-repcopy! target tstart s sfrom sto start end))))))
