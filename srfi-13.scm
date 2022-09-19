@@ -1856,8 +1856,8 @@
              (make-string anslen (string-ref s start)))
 
             ;; Selected text falls entirely within one span.
-            ((= (fpfloor (fp/ (exact->inexact from) (exact->inexact slen)) )
-                (fpfloor (fp/ (exact->inexact to) (exact->inexact slen))))
+            ((fp= (fpfloor (fp/ (exact->inexact from) (exact->inexact slen)) )
+                  (fpfloor (fp/ (exact->inexact to) (exact->inexact slen))))
              (##sys#substring s (+ start (modulo from slen))
                               (+ start (modulo to   slen))))
 
@@ -1904,8 +1904,8 @@
              (##srfi13#string-fill! target (string-ref s start) tstart tend))
 
             ;; Selected text falls entirely within one span.
-            ((= (fpfloor (fp/ (exact->inexact sfrom) (exact->inexact slen)) )
-                (fpfloor (fp/ (exact->inexact sto) (exact->inexact slen))))
+            ((fp= (fpfloor (fp/ (exact->inexact sfrom) (exact->inexact slen)) )
+                  (fpfloor (fp/ (exact->inexact sto) (exact->inexact slen))))
              (%string-copy! target tstart s
                             (+ start (modulo sfrom slen))
                             (+ start (modulo sto   slen))))
