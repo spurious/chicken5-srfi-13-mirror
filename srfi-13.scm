@@ -1927,16 +1927,14 @@
            (nleft (- total-chars ncopied))      ; # chars left to copy.
            (nspans (quotient nleft slen)))      ; # whole spans to copy
 
-      (if (negative? nleft) ;; Total length is shorter that original string
-          target
-          ;; Copy the whole spans in the middle.
-          (do ((i (+ tstart ncopied) (+ i slen))    ; Current target index.
-               (nspans nspans (- nspans 1)))        ; # spans to copy
-              ((zero? nspans)
-               ;; Copy the partial-span @ the end & we're done.
-               (%string-copy! target i s start (+ start (- total-chars (- i tstart)))))
+      ;; Copy the whole spans in the middle.
+      (do ((i (+ tstart ncopied) (+ i slen))    ; Current target index.
+           (nspans nspans (- nspans 1)))        ; # spans to copy
+           ((zero? nspans)
+            ;; Copy the partial-span @ the end & we're done.
+            (%string-copy! target i s start (+ start (- total-chars (- i tstart)))))
 
-            (%string-copy! target i s start end)))))); Copy a whole span.
+          (%string-copy! target i s start end))))); Copy a whole span.
 
 
 
