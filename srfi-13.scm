@@ -1653,6 +1653,7 @@
 
 (define (string-concatenate/shared strings)
   (let lp ((strings strings) (nchars 0) (first #f))
+    (##sys#check-list strings 'string-concatenate/shared)
     (cond ((pair? strings)                      ; Scan the args, add up total
            (let* ((string  (car strings))       ; length, remember 1st
                   (tail (cdr strings))          ; non-empty string.
@@ -1687,6 +1688,7 @@
                     ((not (pair? strings)) i)))
          (ans (make-string total)))
     (let lp ((i 0) (strings strings))
+      (##sys#check-list strings 'string-concatenate)
       (if (pair? strings)
           (let* ((s (car strings))
                  (slen (string-length s)))
@@ -1714,6 +1716,7 @@
 ;                                            (<= 0 end (string-length final)))))
     (##sys#check-fixnum end 'string-concatenate-reverse)
     (let ((len (let lp ((sum 0) (lis string-list))
+                 (##sys#check-list lis 'string-concatenate-reverse)
                  (if (pair? lis)
                      (lp (+ sum (string-length (car lis))) (cdr lis))
                      sum))))
@@ -1731,6 +1734,7 @@
     ;; pointer NZLIST into STRING-LIST showing where the first non-zero-length
     ;; string starts.
     (let lp ((len 0) (nzlist #f) (lis string-list))
+      (##sys#check-list lis 'string-concatenate-reverse/shared)
       (if (pair? lis)
           (let ((slen (string-length (car lis))))
             (lp (+ len slen)
